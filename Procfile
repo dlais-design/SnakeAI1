@@ -1,1 +1,0 @@
-worker: python snakeai_bot.py
