@@ -6,8 +6,7 @@ from aiogram.types import Message
 
 BOT_TOKEN = "7965315840:AAEyCa8sc6Mz_cm5XQlS4j6YxI1zl5ryuyY"
 GEMINI_KEY = "AIzaSyCb3C6dp2_yr9Y01fIxDsGpiSW-WC-WZ34"
-# Актуальная модель (Gemini 2.5 Flash)
-MODEL = "gemini-2.5-flash-preview-05-20"
+MODEL = "gemini-2.0-flash"
 GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
 
 bot = Bot(token=BOT_TOKEN)
@@ -15,7 +14,6 @@ dp = Dispatcher()
 
 SYSTEM_PROMPT = """Ты — SnakeAI, персональный ИИ-ассистент. Твой создатель @dlais1337. Отвечай чётко, по делу, без лишней воды. Помогай с вопросами, текстами, кодом и анализом информации."""
 
-# Хранилище истории
 history = {}
 
 @dp.message(Command("start"))
@@ -41,19 +39,15 @@ async def handle(message: Message):
     
     await bot.send_chat_action(message.chat.id, "typing")
     
-    # Инициализация истории
     if uid not in history:
         history[uid] = []
     
-    # Добавляем системный промпт если история пуста
     if len(history[uid]) == 0:
         history[uid].append({"role": "user", "parts": [{"text": SYSTEM_PROMPT}]})
         history[uid].append({"role": "model", "parts": [{"text": "Понял. Я готов помогать."}]})
     
-    # Добавляем сообщение пользователя
     history[uid].append({"role": "user", "parts": [{"text": user_text}]})
     
-    # Ограничиваем историю
     if len(history[uid]) > 12:
         history[uid] = history[uid][:2] + history[uid][-10:]
     
